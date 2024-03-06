@@ -20,4 +20,43 @@ const getStudentById = async (req, res) => {
   });
 };
 
-module.exports = { getStudents, getStudentById };
+const addStudent = async (req, res) => {
+  const { name, email, age, dob } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
+  }
+
+  try {
+    const emailExists = await pool.query(queries.checkEmail, [email]);
+    if (emailExists.rows.length > 0) {
+      return res.status(400).json({ error: 'Email already exists' });
+    }
+
+    const result = await pool.query(queries.addStudent, [
+      name,
+      email,
+      age,
+      dob,
+    ]);
+    const newStudent = result.rows[0];
+
+    return res.status(201).json({
+      message: 'Student added successfully',
+      student: {
+        id: newStudent.id,
+        name: newStudent.name,
+        email: newStudent.email,
+        age: newStudent.age,
+        dob: newStudent.dob,
+      },
+    });
+  } catch (error) {
+    console.error('Error adding student', error);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while adding the student' });
+  }
+};
+
+module.exports = { getStudents, getStudentById, addStudent };
