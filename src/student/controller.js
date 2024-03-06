@@ -76,22 +76,22 @@ const addStudent = async (req, res) => {
 
 const removeStudent = async (req, res) => {
   const id = parseInt(req.params.id);
-  pool.query(queries.getStudentById, [id], (error, results) => {
-    if (error) {
-      throw error;
-    }
-    const student = results.rows[0];
+
+  try {
+    const getResults = await pool.query(queries.getStudentById, [id]);
+    const student = getResults.rows[0];
     if (!student) {
       return res.status(404).json({ error: 'Student not found' });
     }
 
-    pool.query(queries.removeStudent, [id], (error) => {
-      if (error) {
-        throw error;
-      }
-      res.status(200).json({ message: 'Student deleted successfully' });
-    });
-  });
+    await pool.query(queries.removeStudent, [id]);
+    res.status(200).json({ message: 'Student deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting student', error);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while deleting the student' });
+  }
 };
 
 const updateStudent = async (req, res) => {
