@@ -59,4 +59,24 @@ const addStudent = async (req, res) => {
   }
 };
 
-module.exports = { getStudents, getStudentById, addStudent };
+const removeStudent = async (req, res) => {
+  const id = parseInt(req.params.id);
+  pool.query(queries.getStudentById, [id], (error, results) => {
+    if (error) {
+      throw error;
+    }
+    const student = results.rows[0];
+    if (!student) {
+      return res.status(404).json({ error: 'Student not found' });
+    }
+
+    pool.query(queries.removeStudent, [id], (error) => {
+      if (error) {
+        throw error;
+      }
+      res.status(200).json({ message: 'Student deleted successfully' });
+    });
+  });
+};
+
+module.exports = { getStudents, getStudentById, addStudent, removeStudent };
