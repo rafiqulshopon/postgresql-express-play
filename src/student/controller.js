@@ -98,22 +98,21 @@ const updateStudent = async (req, res) => {
   const id = parseInt(req.params.id);
   const { name } = req.body;
 
-  pool.query(queries.getStudentById, [id], (error, results) => {
-    if (error) {
-      throw error;
-    }
+  try {
+    const results = await pool.query(queries.getStudentById, [id]);
     const student = results.rows[0];
     if (!student) {
       return res.status(404).json({ error: 'Student not found' });
     }
 
-    pool.query(queries.updateStudent, [name, id], (error) => {
-      if (error) {
-        throw error;
-      }
-      res.status(200).json({ message: 'Student updated successfully' });
-    });
-  });
+    await pool.query(queries.updateStudent, [name, id]);
+    res.status(200).json({ message: 'Student updated successfully' });
+  } catch (error) {
+    console.error('Error updating student', error);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while updating the student' });
+  }
 };
 
 export default {
