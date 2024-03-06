@@ -2,12 +2,19 @@ import pool from '../db.js';
 import queries from './queries.js';
 
 const getStudents = async (req, res) => {
-  pool.query(queries.getStudents, (error, results) => {
-    if (error) {
-      throw error;
+  try {
+    const results = await pool.query(queries.getStudents);
+    if (results.rows.length === 0) {
+      return res.status(404).json({ message: 'No students found' });
     }
+
     res.status(200).json(results.rows);
-  });
+  } catch (error) {
+    console.error('Error fetching students', error);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while fetching the students' });
+  }
 };
 
 const getStudentById = async (req, res) => {
