@@ -1,5 +1,5 @@
-import pool from '../utils/db.js';
-import queries from './queries.js';
+import pool from '../config/db.js';
+import queries from '../models/studentModel.js';
 
 const getStudents = async (req, res) => {
   try {
