@@ -19,12 +19,20 @@ const getStudents = async (req, res) => {
 
 const getStudentById = async (req, res) => {
   const id = parseInt(req.params.id);
-  pool.query(queries.getStudentById, [id], (error, results) => {
-    if (error) {
-      throw error;
+
+  try {
+    const results = await pool.query(queries.getStudentById, [id]);
+    if (results.rows.length === 0) {
+      return res.status(404).json({ message: 'Student not found' });
     }
-    res.status(200).json(results.rows);
-  });
+
+    res.status(200).json(results.rows[0]);
+  } catch (error) {
+    console.error('Error fetching student by ID', error);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while fetching the student' });
+  }
 };
 
 const addStudent = async (req, res) => {
