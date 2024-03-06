@@ -79,4 +79,32 @@ const removeStudent = async (req, res) => {
   });
 };
 
-module.exports = { getStudents, getStudentById, addStudent, removeStudent };
+const updateStudent = async (req, res) => {
+  const id = parseInt(req.params.id);
+  const { name } = req.body;
+
+  pool.query(queries.getStudentById, [id], (error, results) => {
+    if (error) {
+      throw error;
+    }
+    const student = results.rows[0];
+    if (!student) {
+      return res.status(404).json({ error: 'Student not found' });
+    }
+
+    pool.query(queries.updateStudent, [name, id], (error) => {
+      if (error) {
+        throw error;
+      }
+      res.status(200).json({ message: 'Student updated successfully' });
+    });
+  });
+};
+
+module.exports = {
+  getStudents,
+  getStudentById,
+  addStudent,
+  removeStudent,
+  updateStudent,
+};
