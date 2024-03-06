@@ -7,7 +7,7 @@ const addStudent =
 const removeStudent = 'DELETE FROM students WHERE id = $1';
 const updateStudent = 'UPDATE students SET name = $1 WHERE id = $2';
 
-module.exports = {
+export default {
   getStudents,
   getStudentById,
   addStudent,

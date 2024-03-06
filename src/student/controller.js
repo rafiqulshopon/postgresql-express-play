@@ -1,5 +1,5 @@
-const pool = require('../db');
-const queries = require('./queries');
+import pool from '../db.js';
+import queries from './queries.js';
 
 const getStudents = async (req, res) => {
   pool.query(queries.getStudents, (error, results) => {
@@ -101,7 +101,7 @@ const updateStudent = async (req, res) => {
   });
 };
 
-module.exports = {
+export default {
   getStudents,
   getStudentById,
   addStudent,
